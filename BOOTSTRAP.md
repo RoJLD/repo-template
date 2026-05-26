@@ -3,6 +3,13 @@
 Two paths : **scripted** (use `bootstrap.ps1`, recommended) or **manual**
 (copy + sed-replace). Allow ~2 minutes scripted, ~10 minutes manual.
 
+## Quick discovery
+
+```powershell
+.\bootstrap.ps1 -List
+# Prints every recipe + every addon with short descriptions.
+```
+
 ## Path A — scripted (recommended)
 
 ### Quickest — pick a recipe
@@ -59,10 +66,50 @@ The script defaults to **tier 2, no addons** if neither `-Recipe` nor
    `docs/decisions/`, `validation/`, `notes/`, `CONTRIBUTING.md`).
 5. If `Tier = 3` : layers `tier-3-additions/` on top.
 6. For each addon : merges `addons/<name>/` into `$Dest` (non-destructive
-   directory merge ; addon README excluded).
+   directory merge ; addon README excluded ; `*.append` files are
+   *appended* to their target instead of overwriting).
 7. Replaces all `{{PLACEHOLDERS}}` across the merged tree.
-8. Reports any leftover placeholders.
-9. Runs `git init` + first commit (unless `-InitGit $false`).
+8. **Writes `.repo-template-answers.json`** to the project root (records
+   tier, addons, placeholders, template commit, timestamp). Lets
+   `validate.ps1` and `add-addon.ps1` know what was applied.
+9. Reports any leftover placeholders.
+10. Runs `git init` + first commit (unless `-InitGit $false`).
+
+## Audit an existing project
+
+```powershell
+# Auto-detects what to check via .repo-template-answers.json
+.\validate.ps1 -Path "..\my-project"
+
+# Or force-claim a recipe
+.\validate.ps1 -Path "..\my-project" -Recipe ml-research
+
+# Disable specific check codes
+.\validate.ps1 -Path "..\my-project" -Disable "RT020,ML002"
+```
+
+Numbered check codes (inspired by sp-repo-review) :
+- `RT001..RT019` = tier 1 baseline (README, LICENSE, AGENTS.md, ...)
+- `RT020..RT039` = tier 2 (CHANGELOG, ADRs, validation/, notes/, ...)
+- `RT040..RT049` = tier 3 (CODE_OF_CONDUCT, SECURITY, ...)
+- `ML*` / `WEB*` / `ACA*` / `DEV*` / `SUP*` / `IAC*` / `CI*` = per-addon
+- `PH001` = leftover `{{PLACEHOLDER}}` anywhere
+
+Exit code 0 = all checks pass, 1 = at least one failure.
+
+## Add an addon to an existing project
+
+```powershell
+# Start as private-tool, later realize you need notebooks
+.\add-addon.ps1 -Path "..\my-tool" -Addons "ml"
+
+# Or layer several at once
+.\add-addon.ps1 -Path "..\my-tool" -Addons "ml,code-intel"
+```
+
+Reuses the merge logic of `bootstrap.ps1` (`*.append` semantics
+included), refuses to add addons already present, and updates
+`.repo-template-answers.json` so future `validate.ps1` knows.
 
 ## Path B — manual
 

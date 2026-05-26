@@ -96,6 +96,9 @@ When in doubt : start with `private-tool` and add addons as needs emerge.
 ## How to use
 
 ```powershell
+# Discover what's available
+.\bootstrap.ps1 -List
+
 # One-shot with a recipe (the easy path)
 .\bootstrap.ps1 `
     -Name "my-engine" -Title "My Engine" `
@@ -108,14 +111,28 @@ When in doubt : start with `private-tool` and add addons as needs emerge.
     -Description "Public lib." `
     -Tier 3 -Addons "supply-chain,academic"
 
-# Or just defaults (tier 2, no addons)
-.\bootstrap.ps1 `
-    -Name "my-tool" -Title "My Tool" `
-    -Description "Does X for Y."
+# Audit an existing project against what it claims to be
+.\validate.ps1 -Path "..\my-engine"
+# (auto-loads .repo-template-answers.json — no need to re-state the recipe)
+
+# Add a capability to an existing project later
+.\add-addon.ps1 -Path "..\my-tool" -Addons "code-intel"
 ```
 
 See [BOOTSTRAP.md](BOOTSTRAP.md) for the manual walkthrough and the
 placeholder cheat sheet.
+
+## Three scripts, one workflow
+
+| Script | Role | Inspired by |
+|---|---|---|
+| `bootstrap.ps1` | Create a new project from a recipe or tier+addons | cookiecutter / copier |
+| `validate.ps1` | Audit an existing project ; numbered checks (RT001 / ML002 / ...) | scientific-python's sp-repo-review |
+| `add-addon.ps1` | Add capability packs to an already-bootstrapped project | Nx generators |
+
+Bootstrap writes `.repo-template-answers.json` to every project (copier
+convention). `validate.ps1` reads it to know what to check ; `add-addon.ps1`
+reads + updates it.
 
 ## What's in the box
 
@@ -124,8 +141,10 @@ repo-template/
 ├── README.md              # This file — philosophy + tiers + addons + recipes
 ├── BOOTSTRAP.md           # Concrete "create new project" guide
 ├── PATTERNS.md            # Field guide — when to apply each pattern
-├── bootstrap.ps1          # PowerShell bootstrap script
-├── template/              # Tier-2 base skeleton
+├── bootstrap.ps1          # Create a new project
+├── validate.ps1           # Audit an existing project (numbered checks)
+├── add-addon.ps1          # Add a capability pack to an existing project
+├── template/              # Tier-1+2 base skeleton (incl. AGENTS.md / CLAUDE.md / GEMINI.md / CODEX.md)
 ├── tier-3-additions/      # Layered on top when -Tier 3
 ├── addons/
 │   ├── ml/                # Notebooks + Binder gallery
@@ -135,7 +154,8 @@ repo-template/
 │   ├── supply-chain/      # SBOM + Dependabot + OpenSSF Scorecard
 │   ├── infra/             # Checkov IaC scanning + infra/ layout
 │   └── code-intel/        # GitNexus MCP wiring (ADR + AGENTS/CLAUDE blocks + reindex)
-└── recipes/               # Pre-baked tier+addon JSON profiles
+├── recipes/               # Pre-baked tier+addon JSON profiles
+└── .github/workflows/     # CI : matrix bootstrap test for every recipe
 ```
 
 ## Lineage — what fed this template

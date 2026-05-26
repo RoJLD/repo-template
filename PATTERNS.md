@@ -439,6 +439,76 @@ project. The bootstrap script auto-discovers it.
 
 ---
 
+## Borrowed-from-the-best patterns
+
+After auditing the scaffolding ecosystem (cookiecutter, copier,
+cookie-composer, scientific-python/cookie, Yeoman, Nx, AGENTS.md
+standard), four patterns were worth stealing :
+
+### Pattern : Answers file (from copier)
+
+Every bootstrapped project gets a `.repo-template-answers.json` at
+root, recording :
+
+```json
+{
+  "schema_version": 1,
+  "bootstrapped_at": "2026-05-26T12:34:56+02:00",
+  "template_commit": "b514c03...",
+  "recipe": "ml-research",
+  "tier": 2,
+  "addons": ["ml", "academic", "code-intel"],
+  "placeholders": { "PROJECT_NAME": "...", ... },
+  "history": [
+    { "at": "...", "action": "add-addon", "addons": ["code-intel"] }
+  ]
+}
+```
+
+**Why it works** : the project is now self-describing. `validate.ps1`
+auto-detects what to check. `add-addon.ps1` knows what's already
+applied. Future "what version of the template did I bootstrap from ?"
+is answered by `template_commit`.
+
+### Pattern : Numbered check codes (from sp-repo-review)
+
+`validate.ps1` failures use stable codes (`RT001` = missing LICENSE,
+`ML002` = missing notebooks/, `CI004` = AGENTS.md doesn't contain
+GitNexus block, `PH001` = leftover placeholder).
+
+**Why it works** : codes are stable and searchable. Disable a check
+via `-Disable RT020,ML002` when a project deliberately deviates. Codes
+also make CI failures actionable (paste the code → grep the validator
+script → find the rule).
+
+### Pattern : Multi-agent canonical file (AGENTS.md standard)
+
+The base skeleton ships `AGENTS.md` as canonical + `CLAUDE.md` +
+`GEMINI.md` + `CODEX.md` as stubs pointing back. AGENTS.md is the
+open standard governed by the Agentic AI Foundation (Sourcegraph +
+OpenAI + Google + Cursor + Factory).
+
+**Why it works** : every agent looks for "its" filename and finds the
+expected context. No symlinks needed (Windows-friendly). Stub files
+say "see AGENTS.md" so the agent reads the canonical content. Future
+agents fitting the standard just need one more stub.
+
+### Pattern : Incremental addons (from Nx generators)
+
+`add-addon.ps1` lets you start with a minimal recipe and grow.
+Common journey :
+
+```
+private-tool (tier 2)
+  → add ml          (notebooks for an experiment)
+    → add academic  (paper to cite)
+      → tier-3 + add supply-chain (publishing on PyPI)
+```
+
+**Why it works** : you don't have to predict the project's final shape
+at day 0. Recipes are starting points, not commitments. Each addon is
+reversible (delete its files, edit `.repo-template-answers.json`).
+
 ## Closing thoughts
 
 The single biggest lesson from across Robin's projects :

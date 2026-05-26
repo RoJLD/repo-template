@@ -61,9 +61,9 @@
 #>
 
 param(
-    [Parameter(Mandatory=$true)][string]$Name,
-    [Parameter(Mandatory=$true)][string]$Title,
-    [Parameter(Mandatory=$true)][string]$Description,
+    [Parameter(Mandatory=$false)][string]$Name,
+    [Parameter(Mandatory=$false)][string]$Title,
+    [Parameter(Mandatory=$false)][string]$Description,
     [string]$Recipe = "",
     [ValidateSet("1","2","3")][string]$Tier = "2",
     [string]$Addons = "",
@@ -74,12 +74,48 @@ param(
     [string]$GitHubRepo = "",
     [string]$PythonVersion = "3.11",
     [string]$License = "MIT",
-    [bool]$InitGit = $true
+    [bool]$InitGit = $true,
+    [switch]$List
 )
 
 $ErrorActionPreference = "Stop"
 
 $TemplateDir = Split-Path -Parent $PSCommandPath
+
+# --- -List : print recipes + addons and exit ------------------------------
+if ($List) {
+    Write-Host ""
+    Write-Host "Available recipes (recipes/*.json) :" -ForegroundColor Cyan
+    Get-ChildItem (Join-Path $TemplateDir "recipes") -Filter "*.json" | ForEach-Object {
+        $r = Get-Content $_.FullName -Raw | ConvertFrom-Json
+        $addons = if ($r.addons) { $r.addons -join ', ' } else { '(none)' }
+        "{0,-22} tier {1}  + [{2}]" -f $_.BaseName, $r.tier, $addons | Write-Host
+        if ($r.description) { Write-Host "                       $($r.description)" -ForegroundColor DarkGray }
+    }
+    Write-Host ""
+    Write-Host "Available addons (addons/) :" -ForegroundColor Cyan
+    Get-ChildItem (Join-Path $TemplateDir "addons") -Directory | ForEach-Object {
+        $readme = Join-Path $_.FullName "README.md"
+        $desc = ""
+        if (Test-Path $readme) {
+            # First non-header non-empty line of the README
+            $desc = (Get-Content $readme | Where-Object { $_ -and -not $_.StartsWith('#') } | Select-Object -First 1).Trim()
+        }
+        "{0,-22} {1}" -f $_.Name, $desc | Write-Host
+    }
+    Write-Host ""
+    Write-Host "Usage : .\bootstrap.ps1 -Name foo -Title Foo -Description '...' -Recipe <name>" -ForegroundColor Yellow
+    Write-Host "        .\bootstrap.ps1 -Name foo -Title Foo -Description '...' -Tier 3 -Addons 'ml,academic'" -ForegroundColor Yellow
+    exit 0
+}
+
+# Required parameters (mandatory unless -List)
+foreach ($p in @('Name', 'Title', 'Description')) {
+    if (-not (Get-Variable -Name $p -ValueOnly -ErrorAction SilentlyContinue)) {
+        Write-Host "ERROR : -$p is required (or pass -List to discover recipes)." -ForegroundColor Red
+        exit 2
+    }
+}
 
 # --- Resolve recipe (if any) ----------------------------------------------
 $AddonList = @()
@@ -266,6 +302,27 @@ foreach ($addon in $AddonList) {
 # --- Apply placeholders across the merged tree ---------------------------
 Write-Host "Replacing placeholders..." -ForegroundColor Yellow
 Apply-Placeholders -Root $Dest
+
+# --- Write .repo-template-answers.json (copier-answers equivalent) -------
+# Records what tier+addons+placeholders were used. validate.ps1 reads it.
+# add-addon.ps1 updates it when adding capabilities later.
+$answers = [ordered]@{
+    schema_version       = 1
+    bootstrapped_at      = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK')
+    template_commit      = ""    # filled below if template is a git repo
+    recipe               = $Recipe
+    tier                 = [int]$Tier
+    addons               = @($AddonList)
+    placeholders         = $placeholders
+}
+# Capture template commit hash for future "what version of the template did this use?"
+try {
+    $gitInRepoTemplate = git -C $TemplateDir rev-parse HEAD 2>$null
+    if ($LASTEXITCODE -eq 0) { $answers.template_commit = $gitInRepoTemplate.Trim() }
+} catch { }
+$answersPath = Join-Path $Dest ".repo-template-answers.json"
+$answers | ConvertTo-Json -Depth 4 | Set-Content -Path $answersPath -NoNewline
+Write-Host "Wrote $answersPath" -ForegroundColor DarkGray
 
 # --- Verify no placeholders left -----------------------------------------
 $remaining = Get-ChildItem -Recurse -File $Dest | Select-String -Pattern '\{\{[A-Z_]+\}\}' -ErrorAction SilentlyContinue
