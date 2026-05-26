@@ -217,12 +217,20 @@ if ($Tier -eq "3") {
 
 # --- Merge addons ---------------------------------------------------------
 # Convention :
-#   - addon/README.md is excluded (it documents the addon, not the project)
+#   - addon/README.md at the addon root is excluded (it documents the addon)
 #   - addon/foo.bar.append  -> appends to dest/foo.bar (or creates if absent)
 #   - everything else copies as-is (subdirectories merge recursively)
+#   - README.md inside subdirectories (e.g. notebooks/README.md) IS copied
 function Copy-AddonTree {
-    param([string]$AddonRoot, [string]$DestRoot)
-    Get-ChildItem -Force $AddonRoot | Where-Object { $_.Name -ne "README.md" } | ForEach-Object {
+    param(
+        [string]$AddonRoot,
+        [string]$DestRoot,
+        [switch]$TopLevel
+    )
+    Get-ChildItem -Force $AddonRoot | Where-Object {
+        # Only skip README.md at the top-level of the addon
+        -not ($TopLevel -and $_.Name -eq "README.md")
+    } | ForEach-Object {
         if ($_.PSIsContainer) {
             $target = Join-Path $DestRoot $_.Name
             if (-not (Test-Path $target)) { New-Item -ItemType Directory -Path $target | Out-Null }
@@ -252,7 +260,7 @@ foreach ($addon in $AddonList) {
         Write-Host "  WARNING : addon dir missing : $addonDir" -ForegroundColor Yellow
         continue
     }
-    Copy-AddonTree -AddonRoot $addonDir -DestRoot $Dest
+    Copy-AddonTree -AddonRoot $addonDir -DestRoot $Dest -TopLevel
 }
 
 # --- Apply placeholders across the merged tree ---------------------------
