@@ -1,0 +1,104 @@
+name: bootstrap-matrix
+
+# Smoke-test every recipe : bootstrap a fake project from it, then
+# validate that the output matches what the recipe claims.
+# Catches regressions in bootstrap.ps1 or any addon's file layout.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bootstrap.ps1'
+      - 'validate.ps1'
+      - 'template/**'
+      - 'tier-3-additions/**'
+      - 'addons/**'
+      - 'recipes/**'
+      - '.github/workflows/test-bootstrap.yml'
+  pull_request:
+    paths:
+      - 'bootstrap.ps1'
+      - 'validate.ps1'
+      - 'template/**'
+      - 'tier-3-additions/**'
+      - 'addons/**'
+      - 'recipes/**'
+      - '.github/workflows/test-bootstrap.yml'
+  workflow_dispatch:
+
+jobs:
+  bootstrap-and-validate:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe:
+          - prototype
+          - private-tool
+          - ai-pair-programming
+          - ml-research
+          - web-service
+          - oss-library
+          - academic-library
+          - full-stack-research
+          - cloud-deployment
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap project from recipe '${{ matrix.recipe }}'
+        shell: pwsh
+        run: |
+          $dest = Join-Path $env:RUNNER_TEMP "test-${{ matrix.recipe }}"
+          .\bootstrap.ps1 `
+            -Name "test-${{ matrix.recipe }}" `
+            -Title "Test ${{ matrix.recipe }}" `
+            -Description "CI bootstrap smoke test." `
+            -Recipe "${{ matrix.recipe }}" `
+            -Path $env:RUNNER_TEMP `
+            -GitHubRepo "test-${{ matrix.recipe }}" `
+            -InitGit $false
+          if (-not (Test-Path $dest)) {
+            Write-Host "ERROR : bootstrap did not produce $dest" -ForegroundColor Red
+            exit 1
+          }
+
+      - name: Validate '${{ matrix.recipe }}' bootstrap matches recipe
+        shell: pwsh
+        run: |
+          $dest = Join-Path $env:RUNNER_TEMP "test-${{ matrix.recipe }}"
+          .\validate.ps1 -Path $dest -Recipe "${{ matrix.recipe }}"
+
+      - name: Verify no placeholders remain
+        shell: pwsh
+        run: |
+          $dest = Join-Path $env:RUNNER_TEMP "test-${{ matrix.recipe }}"
+          $found = Get-ChildItem -Recurse -File $dest | Select-String -Pattern '\{\{[A-Z_]+\}\}'
+          if ($found) {
+            Write-Host "ERROR : leftover placeholders" -ForegroundColor Red
+            $found | ForEach-Object { Write-Host "  $($_.Path):$($_.LineNumber) -> $($_.Matches[0].Value)" }
+            exit 1
+          }
+          Write-Host "OK : no placeholders left."
+
+  # Also lint bootstrap.ps1 + validate.ps1 syntactically
+  syntax-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PowerShell parse check
+        shell: pwsh
+        run: |
+          $scripts = @("bootstrap.ps1", "validate.ps1")
+          foreach ($s in $scripts) {
+            $errors = $null
+            $null = [System.Management.Automation.PSParser]::Tokenize(
+              (Get-Content $s -Raw), [ref]$errors
+            )
+            if ($errors.Count -gt 0) {
+              Write-Host "PARSE ERRORS in ${s}:" -ForegroundColor Red
+              $errors | Format-Table -AutoSize
+              exit 1
+            }
+            Write-Host "${s} : OK" -ForegroundColor Green
+          }
