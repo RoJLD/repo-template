@@ -1,0 +1,12 @@
+{
+  "name": "ml-research",
+  "description": "Notebook-driven research project with docs site + gitnexus code-graph",
+  "tier": 2,
+  "addons": ["ml", "academic", "code-intel"],
+  "example_projects": ["hmm_studio core (without web layer)", "Experiment.Crypto.2026S1"],
+  "notes": [
+    "Tier-2 + ml addon (notebooks + Binder) + academic (mkdocs + papers) + code-intel (gitnexus)",
+    "If you also need a web UI / dashboard, switch to full-stack-research",
+    "code-intel makes notebook ↔ src/ call chains visible to agents"
+  ]
+}

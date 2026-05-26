@@ -1,0 +1,21 @@
+{
+  "_comment": "Declare the intended domain decomposition for this project. The /dissonance endpoint compares this to the Leiden communities gitnexus detects automatically.  Files placed under the wrong domain show up as 'misplaced' with a purity score.  Rename / fill in.  Delete this .example suffix when ready.",
+  "domains": {
+    "core": {
+      "description": "Pure logic / algorithms / data structures",
+      "paths": ["src/{{PROJECT_NAME}}/core/**", "src/{{PROJECT_NAME}}/algo/**"]
+    },
+    "io": {
+      "description": "Persistence, file I/O, external API clients",
+      "paths": ["src/{{PROJECT_NAME}}/io/**", "src/{{PROJECT_NAME}}/clients/**"]
+    },
+    "ui": {
+      "description": "User-facing surfaces (CLI / web / dashboard)",
+      "paths": ["src/{{PROJECT_NAME}}/cli/**", "src/{{PROJECT_NAME}}/web/**"]
+    },
+    "tests": {
+      "description": "Test suites",
+      "paths": ["tests/**", "validation/**"]
+    }
+  }
+}

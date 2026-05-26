@@ -1,0 +1,12 @@
+{
+  "name": "full-stack-research",
+  "description": "Research project with engine + web UI + notebooks + docs site + gitnexus (hmm_studio profile)",
+  "tier": 3,
+  "addons": ["ml", "academic", "web", "devcontainer", "supply-chain", "code-intel"],
+  "example_projects": ["hmm_studio (this exact recipe)"],
+  "notes": [
+    "Everything except infra (no IaC).",
+    "Use this when the project is your magnum opus and you want every distribution surface.",
+    "code-intel included because magnum-opus projects benefit most from the code-graph"
+  ]
+}

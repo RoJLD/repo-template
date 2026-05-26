@@ -1,0 +1,11 @@
+{
+  "name": "prototype",
+  "description": "Throwaway experiment, < 1 week lifespan. Minimal ceremony.",
+  "tier": 1,
+  "addons": [],
+  "example_projects": [],
+  "notes": [
+    "Removes CHANGELOG, CONTRIBUTING, docs/specs, validation/, notes/",
+    "Keeps README, LICENSE, .gitignore, src/, tests/, AGENTS.md"
+  ]
+}

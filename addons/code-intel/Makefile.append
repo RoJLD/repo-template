@@ -1,0 +1,20 @@
+
+# --- GitNexus code-intelligence targets ---
+
+.PHONY: reindex reindex-force graph-status graph-skills graph-up
+
+reindex:  ## Re-analyze this repo via gitnexus (incremental)
+	powershell -ExecutionPolicy Bypass -File scripts/reindex.ps1
+
+reindex-force:  ## Force a full re-analysis (drops the existing index)
+	powershell -ExecutionPolicy Bypass -File scripts/reindex.ps1 -Force
+
+graph-status:  ## Show gitnexus daemon status + index state for this repo
+	@curl -s http://localhost:4747/api/health || echo "gitnexus daemon down"
+	@curl -s http://localhost:4747/api/repos | grep -i "$$(basename $$(pwd))" || echo "this repo is not registered"
+
+graph-skills:  ## Generate .claude/skills/ from Leiden communities
+	docker exec gitnexus gitnexus analyze /data/projects/$$(basename $$(pwd)) --skills
+
+graph-up:  ## Start the gitnexus daemon (assumes it lives at ../gitnexus/)
+	cd ../gitnexus && powershell -ExecutionPolicy Bypass -File start.ps1

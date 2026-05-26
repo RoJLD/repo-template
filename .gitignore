@@ -1,0 +1,22 @@
+# Repo-template's OWN gitignore (separate from the skeleton's gitignore at template/.gitignore)
+
+# OS junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+
+# Local smoke-tests that may sit inside this folder during dev
+_smoke-*/
+_test-*/
+
+# Override the skeleton's gitignore so its files ARE tracked here
+# (template/.gitignore says "notes/" — that's correct behaviour inside a generated project,
+#  but here we need to ship the skeleton's notes/ scaffold to GitHub)
+!template/notes/
+!template/notes/**

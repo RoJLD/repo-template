@@ -1,0 +1,14 @@
+{
+  "_comment": "Cross-repo similarity policy. Used by gitnexus's /similarity endpoint to warn when this repo becomes structurally too similar to another it should stay distinct from. Useful when you have N projects with overlapping problem domains and need to enforce isolation.  Delete this .example suffix when ready.",
+  "isolation_required": [
+    "_comment": "List repo names this project should NEVER look like (structurally / semantically)."
+  ],
+  "allow_merge_with": [
+    "_comment": "List repo names with which structural similarity is acceptable (e.g. a fork, a sister project)."
+  ],
+  "warnings": {
+    "license_mismatch": true,
+    "age_gap_months": 12,
+    "author_disjoint": true
+  }
+}

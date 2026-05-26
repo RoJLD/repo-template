@@ -1,0 +1,11 @@
+{
+  "name": "oss-library",
+  "description": "Public Python package on PyPI with supply-chain hygiene",
+  "tier": 3,
+  "addons": ["supply-chain"],
+  "example_projects": ["plane-like OSS libraries"],
+  "notes": [
+    "Tier-3 adds CODE_OF_CONDUCT, SECURITY, CODEOWNERS, CITATION.cff",
+    "supply-chain adds SBOM workflow, Dependabot, OpenSSF Scorecard"
+  ]
+}

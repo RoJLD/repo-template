@@ -1,0 +1,11 @@
+{
+  "name": "private-tool",
+  "description": "Solo dev project that may grow. Private repo. Robin's default.",
+  "tier": 2,
+  "addons": [],
+  "example_projects": [],
+  "notes": [
+    "This is the default if you don't pick a recipe.",
+    "Full discipline (ADRs, specs, CHANGELOG, validation, notes) without OSS ceremony."
+  ]
+}

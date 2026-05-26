@@ -1,0 +1,12 @@
+{
+  "name": "ai-pair-programming",
+  "description": "Solo project optimized for Claude / Cursor pair-programming (gitnexus + devcontainer)",
+  "tier": 2,
+  "addons": ["code-intel", "devcontainer"],
+  "example_projects": ["any Robin project where Claude is the daily co-pilot"],
+  "notes": [
+    "Tier-2 base + gitnexus MCP integration + zero-friction VS Code dev env",
+    "Assumes the gitnexus daemon at C:/Users/rdenis/VScode/gitnexus/ is running",
+    "Add 'ml' addon on top if the project includes notebooks"
+  ]
+}

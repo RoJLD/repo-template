@@ -1,0 +1,11 @@
+{
+  "name": "academic-library",
+  "description": "Citable Python package with docs site + supply-chain hygiene",
+  "tier": 3,
+  "addons": ["academic", "supply-chain"],
+  "example_projects": ["hmm_studio core engine (if extracted)"],
+  "notes": [
+    "Tier-3 + academic + supply-chain",
+    "Target audience : researchers who want to cite + reproduce your code"
+  ]
+}

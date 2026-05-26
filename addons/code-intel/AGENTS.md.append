@@ -1,0 +1,58 @@
+## Code-graph context (GitNexus)
+
+This project is indexed by **GitNexus** — a graph code-intelligence MCP
+server running locally at `http://localhost:4747`. **Use it instead of
+grepping blindly** when the question is structural.
+
+### MCP endpoint
+
+```
+http://localhost:4747/api/mcp
+```
+
+Already-wired tools (no setup needed if the daemon is running) :
+
+| Tool | When to use |
+|---|---|
+| `analyze_change` | **Before any refactor / rename / move.** Returns blast radius, scope, affected processes, risk score. Cheaper than a dry-run + safer than guessing. |
+| `generate_map` | Architecture diagrams (mermaid). Use when the user asks "how does X talk to Y" or you need to ground a discussion in the actual structure. |
+| Graph search / context / references | Faster than `grep` for "where is this function called", "what does this class depend on", "what's in this community" |
+
+### Skills auto-loaded
+
+`.claude/skills/` is populated by `gitnexus analyze --skills`. Each
+file is one **community** (Leiden cluster) of related code, with a
+domain-specific `SKILL.md`. Read the relevant `SKILL.md` before
+working in that area.
+
+To regenerate after a big refactor :
+```powershell
+.\scripts\reindex.ps1
+# Then, from outside the container :
+docker exec gitnexus gitnexus analyze /data/projects/{{GITHUB_REPO}} --skills
+```
+
+### Operating protocol for agents
+
+1. **Question is "where is X used / what does X depend on / what changes if I edit X" ?**
+   → Use the MCP graph tools first. Grep is the fallback, not the default.
+2. **About to rename / move / delete something with > 5 references ?**
+   → Run `analyze_change` first. Decide based on blast radius.
+3. **The index is stale** (you just merged a big PR and `analyze_change`
+   returns weirdness) ?
+   → Run `.\scripts\reindex.ps1` and re-query.
+4. **The daemon is down** (MCP endpoint times out) ?
+   → Tell the user. Don't silently fall back to grep — the user should
+   know they're missing a tool.
+
+### Domains + policy (optional)
+
+- `.gitnexus-domains.json` (if present) declares the intended domain
+  decomposition. Use the `/dissonance` endpoint to spot files that
+  drift away from their declared domain.
+- `.gitnexus-policy.json` (if present) declares cross-repo policy
+  (isolation_required, allow_merge_with). The `/similarity` endpoint
+  warns when this project becomes structurally too similar to another
+  it should stay separate from.
+
+Templates : `.gitnexus-domains.json.example` and `.gitnexus-policy.json.example`.

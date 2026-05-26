@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use {{PROJECT_NAME}} in your research, please cite it as below."
+title: "{{PROJECT_TITLE}}"
+type: software
+authors:
+  - given-names: "{{AUTHOR_NAME_FIRST}}"
+    family-names: "{{AUTHOR_NAME_LAST}}"
+    email: "{{AUTHOR_EMAIL}}"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/{{GITHUB_USER}}/{{GITHUB_REPO}}"
+license: {{LICENSE}}
+version: "0.1.0"
+date-released: {{YEAR}}-MM-DD
+keywords:
+  # 5-10 keywords relevant to your project (e.g. for academic search)
+abstract: >
+  (One-paragraph academic abstract. What problem does this solve, for whom,
+  using what approach. 3-5 sentences. This is what shows up in citation
+  metadata and Google Scholar.)

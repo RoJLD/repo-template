@@ -1,0 +1,15 @@
+# CODEOWNERS — auto-assign reviewers based on changed paths
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default — everything reviewed by main maintainer
+* @{{GITHUB_USER}}
+
+# Documentation can be reviewed by docs maintainers (if any)
+# docs/ @docs-team
+
+# Architecture decisions — main maintainer + co-architect
+# docs/decisions/ @{{GITHUB_USER}} @co-architect
+
+# Security-sensitive files
+# SECURITY.md @{{GITHUB_USER}}
+# .github/workflows/ @{{GITHUB_USER}}

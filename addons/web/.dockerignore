@@ -1,0 +1,29 @@
+# Don't bloat the image build context
+.git/
+.github/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Dev artifacts
+.coverage
+.coverage.*
+htmlcov/
+node_modules/
+dist/
+build/
+
+# Project-specific
+notes/
+results/
+docs/
+notebooks/
+validation/
+tests/
+
+# Logs
+*.log
+*.tmp

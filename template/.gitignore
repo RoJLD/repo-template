@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache
+
+# Type checking
+.mypy_cache/
+.ruff_cache/
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+notes/           # PRIVATE working notes — cahier de laboratoire
+results/         # local fit outputs
+*.log
+*.tmp
+
+# Docker
+docker-build.log
+docker-pytest.log
+.docker/
+
+# Node (if applicable)
+node_modules/
+package-lock.json.bak
+dist/
+.next/
+.nuxt/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_meta
+
+# Secrets / credentials — NEVER commit
+.env
+.env.local
+.env.*.local
+secrets/
+credentials.json
+*.pem
+*.key
+
+# Documentation builds
+site/            # mkdocs build output
+_build/          # sphinx
+docs/_build/

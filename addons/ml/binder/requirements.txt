@@ -1,0 +1,15 @@
+# Binder environment for {{PROJECT_NAME}} notebook gallery.
+#
+# Consumed by mybinder.org to build a one-click runnable env for the
+# notebooks/ folder. Keep minimal — only what the notebooks import.
+
+# Core scientific stack — adjust to your project
+numpy>=1.26
+pandas>=2.0
+scipy>=1.11
+scikit-learn>=1.3
+
+# Jupyter runtime
+jupyterlab>=4.0
+ipykernel>=6.0
+matplotlib>=3.8

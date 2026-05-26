@@ -1,0 +1,11 @@
+{
+  "name": "web-service",
+  "description": "API / dashboard with Docker orchestration + zero-friction collaborator setup",
+  "tier": 2,
+  "addons": ["web", "devcontainer"],
+  "example_projects": ["gitnexus", "hmm-studio web layer"],
+  "notes": [
+    "Adds Dockerfile, docker-compose.yml, start.ps1/stop.ps1 (web addon)",
+    "Adds .devcontainer/ for one-click VS Code setup"
+  ]
+}

@@ -1,0 +1,36 @@
+name: IaC scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/iac-scan.yml"
+  pull_request:
+    paths:
+      - "infra/**"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkov scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra/
+          framework: all   # terraform, cloudformation, kubernetes, helm, etc.
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+          soft_fail: false  # fail PR if a high-severity issue is found
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: checkov-results.sarif

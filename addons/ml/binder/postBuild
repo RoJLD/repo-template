@@ -1,0 +1,5 @@
+#!/bin/bash
+# Binder post-build hook : install the project from the checkout in editable mode.
+# mybinder.org executes this after pip install -r requirements.txt.
+set -euo pipefail
+pip install -e ..

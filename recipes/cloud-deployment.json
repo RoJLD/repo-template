@@ -1,0 +1,11 @@
+{
+  "name": "cloud-deployment",
+  "description": "Deployed cloud service with IaC + supply-chain hygiene",
+  "tier": 2,
+  "addons": ["web", "devcontainer", "infra", "supply-chain"],
+  "example_projects": [],
+  "notes": [
+    "For SaaS / cloud-hosted services that ship Terraform / k8s manifests",
+    "Pair with tier-3 if it's also OSS-published"
+  ]
+}
