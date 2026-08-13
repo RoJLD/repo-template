@@ -142,6 +142,7 @@ Add-Check "RT024" "Tier 2: docs/specs/_template.md present" { Has-File "docs/spe
 Add-Check "RT025" "Tier 2: validation/ directory present" { Has-Dir "validation" }
 Add-Check "RT026" "Tier 2: notes/ directory present" { Has-Dir "notes" }
 Add-Check "RT027" "Tier 2: docs/guides/ directory present" { Has-Dir "docs/guides" }
+Add-Check "RT028" "Tier 2: docs/specs/README.md enforces spec-before-plan + historicization" { Has-Marker "docs/specs/README.md" "Mandatory before any implementation plan" }
 
 # ---- Tier-3 (OSS) -------------------------------------------------------
 Add-Check "RT040" "Tier 3: CODE_OF_CONDUCT.md present" { Has-File "CODE_OF_CONDUCT.md" }

@@ -68,31 +68,75 @@ and re-evaluate only the ones whose triggers fired.
 **When to use** : every decision that would take > 30 minutes to
 re-debate six months from now.
 
-### 🧱 Pattern : Spec dated and phase-prefixed
+### 🧱 Pattern : Spec dated, historicized, mandatory before any plan
 
-**Source** : `Tools/hmm_studio/docs/specs/2026-05-22-phase-a10-gmm-nhmm.md`
+**Source** : `Tools/hmm_studio/docs/specs/2026-05-22-phase-a10-gmm-nhmm.md`,
+formalized in the workspace `CLAUDE.md` "Specs discipline" section
+(2026-05-26).
 
-When a phase needs implementation planning beyond a 1-line description :
+When a change needs implementation planning beyond a 1-line description :
 
 ```
-docs/specs/YYYY-MM-DD-phase-X-name.md
+docs/specs/YYYY-MM-DD-<slug>.md
 ```
 
-The date is the spec creation date (NOT the ship date). The phase is the
-roadmap ID (A.10, B.11, etc.).
+For phase-driven projects, include the phase ID in the slug
+(`2026-05-22-phase-a10-gmm-nhmm.md`). Otherwise just a descriptive
+kebab-slug. The date is the spec **creation** date (immutable, even
+when the spec is revised). The ship date goes in CHANGELOG instead.
 
-**Structure** :
-1. Context + motivation
-2. State of the art / competitive landscape (1 paragraph)
-3. Architecture proposed (or strategies considered)
-4. Math / API surface (concrete deliverable contract)
-5. Identifiability / limits / edge cases
-6. Tests minimum (named)
-7. Definition of "done" (checklist)
-8. Successors hors-scope (anti-scope-creep)
+**Mandatory before drafting any plan**. The full contract lives in
+`docs/specs/README.md` (shipped by tier-2+ bootstrap). Operational
+summary :
 
-**When to use** : any phase taking > 1 day of work. Not for routine
-fixes.
+- **Required** when : change touches > 1 file / introduces a new
+  concept / user described it in 2+ sentences / about to invoke a
+  multi-step planning skill (`superpowers:writing-plans`,
+  `brainstorming`, `subagent-driven-development`).
+- **Not required** for : bug fixes, one-line tweaks, doc fixes,
+  dependency bumps.
+
+**Structure** (see `template/docs/specs/_template.md` for the canonical
+form) :
+
+1. Status (`draft / current / superseded by <file> / withdrawn / stale`)
+2. Context + motivation
+3. Goal (one paragraph "what done looks like")
+4. State of the art / alternatives considered (each with *why
+   rejected* — this is the part future-you needs)
+5. Design / architecture (concrete : API surface, data shapes)
+6. Limits / edge cases
+7. Tests minimum (named)
+8. Definition of "done" (checklist, ends with "flip status to
+   `current`")
+9. Out-of-scope (anti-scope-creep)
+10. `## Update YYYY-MM-DD` sections (append-only, for amendments)
+
+**Lifecycle / historicization** :
+
+- Specs are **append-only history**. Never delete.
+- Substantive amendment → add `## Update YYYY-MM-DD — <reason>` section
+  at the bottom of the existing spec. Body above stays intact.
+- Genuine redesign → write a successor spec with `Supersedes:
+  <old-file>` ; flip the old one's status to
+  `superseded by <new-file>` ; leave its body intact.
+- When the feature ships, flip status to `current`. When it's later
+  ripped out or redesigned, do NOT delete the spec — flip status to
+  `superseded by ...` or `withdrawn` so the rationale survives.
+
+**Maintenance contract** : when a feature changes, the relevant spec
+is updated **in the same commit as the code change**. Same rule as
+CHANGELOG and ROADMAP. A code change without the spec update is an
+incomplete change.
+
+**Why this works** : specs become the project's durable design
+documentation rather than throwaway planning artifacts. Six months
+later, you can read the specs directory in chronological order and
+reconstruct every design decision — including the rejected
+alternatives, which are usually invisible in commit history.
+
+**When to use** : every tier-2+ project. Tier-1 prototypes deliberately
+skip this — the bootstrap script trims `docs/specs/` for them.
 
 ### 🧱 Pattern : Roadmap as living strategic doc
 

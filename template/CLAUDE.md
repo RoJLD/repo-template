@@ -27,6 +27,27 @@ Use sparingly : >2-3 imports can dilute the active context and make
 reasoning worse. Prefer ONE canonical file (AGENTS.md) and let the
 agent fetch more on demand.
 
+## Specs discipline (mandatory)
+
+This project follows a **spec-before-plan** discipline. Before invoking
+the `superpowers:writing-plans` skill (or any equivalent multi-step
+planning workflow) for a non-trivial change, write or update a spec
+under [`docs/specs/`](docs/specs/) first.
+
+Full contract in [docs/specs/README.md](docs/specs/README.md). Hard
+points :
+
+- Spec required for any change touching > 1 file, introducing a new
+  concept, or described by the user in 2+ sentences. NOT required for
+  bug fixes / one-liners / dep bumps.
+- Naming : `docs/specs/YYYY-MM-DD-<slug>.md` (creation date, immutable).
+- Specs are append-only history — never delete. Amend via
+  `## Update YYYY-MM-DD — <reason>` sections, or write a successor with
+  `Supersedes: <old-file>`.
+- Update the relevant spec in the **same commit** as the code change.
+
+See [AGENTS.md § Specs](AGENTS.md) for the canonical rule.
+
 ## Hooks / MCP tools
 
 (None configured by default. Add here if you wire up MCP servers like
